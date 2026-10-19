@@ -1,0 +1,7 @@
+{
+  "name": "member2-skill-gap",
+  "version": "1.0.0",
+  "main": "server.js",
+  "scripts": { "seed": "node seed/seedJobRoles.js", "start": "node server.js" },
+  "dependencies": { "cors": "^2.8.5", "dotenv": "^16.4.5", "express": "^4.19.2", "mongoose": "^8.5.0" }
+}

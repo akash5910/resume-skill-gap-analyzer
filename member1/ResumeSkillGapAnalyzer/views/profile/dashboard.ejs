@@ -1,0 +1,173 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard | Resume Skill Gap Analyzer</title>
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body class="dashboard-page">
+
+  <header class="site-header">
+    <div class="brand">
+      <span class="brand-mark">SG</span>
+      <span>Resume Skill Gap Analyzer</span>
+    </div>
+
+    <form action="/logout" method="POST">
+      <button type="submit">Log Out</button>
+    </form>
+  </header>
+
+  <main class="dashboard-main">
+
+    <section class="dashboard-intro">
+      <div class="eyebrow">Your Dashboard</div>
+      <h1>Welcome, <%= user.name %></h1>
+      <p>Manage your profile, skills, and resumes in one place.</p>
+    </section>
+
+    <div class="dashboard-grid">
+
+      <!-- Profile panel -->
+      <section class="panel">
+        <div class="eyebrow">Section I</div>
+        <h2 class="panel-heading">Edit Profile</h2>
+        <p class="panel-description">Keep your personal details up to date.</p>
+
+        <p><strong>Email Address</strong></p>
+        <p><%= user.email %></p>
+
+        <form action="/profile/update" method="POST">
+          <label for="name">Your Name</label>
+          <input
+            type="text"
+            id="name"
+            name="name"
+            value="<%= user.name %>"
+            minlength="2"
+            maxlength="80"
+            required
+          >
+          <button type="submit">Save Name</button>
+        </form>
+      </section>
+
+      <!-- Skills panel -->
+      <section class="panel">
+        <div class="eyebrow">Section II</div>
+        <h2 class="panel-heading">My Skills</h2>
+        <p class="panel-description">Maintain the skills you currently have.</p>
+
+        <% if (user.skills && user.skills.length > 0) { %>
+          <ul class="skill-list">
+            <% user.skills.forEach((skill) => { %>
+              <li>
+                <strong><%= skill %></strong>
+                <form
+                  action="/profile/skills/remove"
+                  method="POST"
+                  style="display: inline;"
+                >
+                  <input type="hidden" name="skill" value="<%= skill %>">
+                  <button class="secondary-button" type="submit">Remove</button>
+                </form>
+              </li>
+            <% }) %>
+          </ul>
+        <% } else { %>
+          <p>You haven't added any skills yet.</p>
+        <% } %>
+
+        <hr>
+
+        <h3>Add a Skill</h3>
+        <form action="/profile/skills/add" method="POST">
+          <label for="skill">Skill Name</label>
+          <input
+            type="text"
+            id="skill"
+            name="skill"
+            placeholder="e.g. Java, Python, SQL"
+            maxlength="50"
+            required
+          >
+          <button type="submit">Add Skill</button>
+        </form>
+      </section>
+
+      <!-- Resume panel -->
+      <section class="panel" style="grid-column: 1 / -1;">
+        <div class="eyebrow">Section III</div>
+        <h2 class="panel-heading">My Resumes</h2>
+        <p class="panel-description">
+          Upload and manage your PDF resumes. Maximum file size: 5 MB.
+        </p>
+
+        <form
+          action="/resumes/upload"
+          method="POST"
+          enctype="multipart/form-data"
+        >
+          <label for="resume">Choose Your Resume</label>
+          <input
+            type="file"
+            id="resume"
+            name="resume"
+            accept=".pdf,application/pdf"
+            required
+          >
+          <button type="submit">Upload Resume</button>
+        </form>
+
+        <hr>
+
+        <% if (resumes && resumes.length > 0) { %>
+          <ul class="resume-list">
+            <% resumes.forEach((resume) => { %>
+              <li>
+                <strong><%= resume.originalName %></strong>
+
+                <p>
+                  Uploaded:
+                  <%= new Date(resume.createdAt).toLocaleDateString() %>
+                </p>
+
+                <p>
+                  Size:
+                  <%= (resume.size / (1024 * 1024)).toFixed(2) %> MB
+                </p>
+
+                <div class="resume-actions">
+                  <a
+                    href="/resumes/<%= resume._id %>/view"
+                    target="_blank"
+                    rel="noopener"
+                  >View PDF</a>
+
+                  <form
+                    action="/resumes/<%= resume._id %>/delete"
+                    method="POST"
+                    onsubmit="return confirm('Delete this resume permanently?');"
+                  >
+                    <button type="submit">Delete Resume</button>
+                  </form>
+                </div>
+              </li>
+            <% }) %>
+          </ul>
+        <% } else { %>
+          <p>You haven't uploaded any resumes yet.</p>
+        <% } %>
+      </section>
+
+    </div>
+
+    <footer class="site-footer">
+      Resume Skill Gap Analyzer · Your career, thoughtfully organized.
+    </footer>
+
+  </main>
+</body>
+</html>
