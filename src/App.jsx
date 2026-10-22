@@ -1,9 +1,11 @@
 import React from 'react';
 import { useEffect, useState } from 'react';
 
-const API = 'http://localhost:5000/api';
-const MEMBER2_API = 'http://localhost:5001/api';
-const MEMBER1_API = 'http://localhost:3000';
+const currentHost = `${window.location.protocol}//${window.location.hostname}`;
+const apiUrl = (configuredUrl, defaultUrl) => (configuredUrl || defaultUrl).replace(/\/$/, '');
+const API = apiUrl(import.meta.env.VITE_MAIN_API_URL, `${currentHost}:5000/api`);
+const MEMBER2_API = apiUrl(import.meta.env.VITE_MEMBER2_API_URL, `${currentHost}:5001/api`);
+const MEMBER1_API = apiUrl(import.meta.env.VITE_MEMBER1_API_URL, `${currentHost}:3000`);
 
 async function readJsonResponse(response, serviceName) {
   const text = await response.text();

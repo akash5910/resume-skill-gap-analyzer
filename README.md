@@ -4,12 +4,11 @@ This project joins Member 1's registration, login, profile and resume module wit
 
 ## Start the app
 
-1. Make sure `.env` contains `MONGODB_URI` (or `MONGO_URI`) and an optional `SESSION_SECRET`. See `.env.example` for the port settings.
-2. Run `npm install` from the project root.
-3. Run `npm install` once from `member1/ResumeSkillGapAnalyzer` to install Member 1's dependencies.
-4. Run `npm start` from the project root. It starts the React page on port 5173, Member 3 API on port 5000, Member 2 API on port 5001, and Member 1 account/resume API on port 3000.
+1. Copy `.env.example` to `.env` and set `MONGODB_URI` (or `MONGO_URI`) to a MongoDB server the computer can reach. Set a private `SESSION_SECRET` too.
+2. Run `npm run setup` from the project root. This installs root and Member 1 packages.
+3. Run `npm start` from the project root. It adds any missing sample roles and learning resources, then starts the React page on port 5173 and the three APIs on ports 3000, 5000, and 5001.
+4. Open `http://localhost:5173` on that computer. From another computer on the same network, open `http://<server-computer-ip>:5173`. The API addresses use the same host name automatically.
 5. Register or log in from the React page. The profile ID is used automatically for skills, progress and bookmarks.
-6. From the project root, run `node member2/member2/seed/seedJobRoles.js` to add any missing example roles. Existing roles are left unchanged.
 
 ## Pages
 
@@ -37,4 +36,8 @@ Member 1 uses a MongoDB session cookie shared with the React page through creden
 - Member 1 account API on port 3000: `/api/auth/register`, `/api/auth/login`, `/api/auth/me`, `/api/auth/logout`, `/api/profile`, and `/api/profile/skills`
 - Member 1 resume API: `GET /resumes/list`, `POST /resumes/upload`, `GET /resumes/:id/view`, and `POST /resumes/:id/delete`
 
-Port 3000 is kept separate from the shared `PORT=5000` setting so Member 1 does not conflict with Member 3. The React analysis field accepts comma-separated skills and saves them to the logged-in user's profile.
+Port 3000 is kept separate from the shared `PORT=5000` setting so Member 1 does not conflict with Member 3. The React analysis field compares the entered skills; only skills added in **My skills** are saved to the user's profile.
+
+## Using the project on another computer
+
+This is a full-stack project, so downloading or opening only the built website files does not include the API servers or MongoDB data. For another computer to use it, run all four app servers on one reachable computer and allow network access to ports 5173, 3000, 5000, and 5001. The server computer needs network access to the MongoDB database configured in `.env`; client computers only need access to the app servers. For use outside the local network, configure the `VITE_*_API_URL` settings to the public API addresses before running `npm run build`, and set `FRONTEND_URL` to the frontend's public address. Resume files are stored on the computer running Member 1's server.

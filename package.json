@@ -4,10 +4,15 @@
   "private": true,
   "type": "module",
   "scripts": {
+    "setup": "npm install && npm install --prefix member1/ResumeSkillGapAnalyzer",
     "server": "node server/index.js",
     "client": "vite --host 0.0.0.0",
     "member1": "node member1/ResumeSkillGapAnalyzer/server.js",
     "member2": "node member2/member2/server.js",
+    "seed:roles": "node member2/member2/seed/seedJobRoles.js",
+    "seed:resources": "node member2/member2/seed/seedLearningResources.js",
+    "seed": "npm run seed:roles && npm run seed:resources",
+    "prestart": "npm run seed",
     "build": "vite build",
     "start": "concurrently \"npm run server\" \"npm run client\" \"npm run member1\" \"npm run member2\""
   },

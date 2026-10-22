@@ -18,11 +18,24 @@ const app = express();
 // The project uses PORT=5000 for the main API, so Member 1 keeps its own port.
 const PORT = process.env.MEMBER1_PORT || 3000;
 const mongoUrl = process.env.MONGO_URI || process.env.MONGODB_URI;
-const allowedOrigins = ["http://localhost:5173", "http://127.0.0.1:5173"];
+const allowedOrigins = (process.env.FRONTEND_URL || "")
+  .split(",").map((origin) => origin.trim()).filter(Boolean);
+
+function isAllowedOrigin(origin, requestHost) {
+  if (allowedOrigins.includes(origin)) return true;
+  try {
+    const originHost = new URL(origin).hostname;
+    const apiHost = requestHost.replace(/^\[|\]$/g, "");
+    return originHost === apiHost ||
+      (["localhost", "127.0.0.1"].includes(originHost) && ["localhost", "127.0.0.1"].includes(apiHost));
+  } catch {
+    return false;
+  }
+}
 
 app.use((req, res, next) => {
   const origin = req.headers.origin;
-  if (allowedOrigins.includes(origin)) {
+  if (origin && isAllowedOrigin(origin, req.hostname)) {
     res.setHeader("Access-Control-Allow-Origin", origin);
     res.setHeader("Access-Control-Allow-Credentials", "true");
     res.setHeader("Vary", "Origin");

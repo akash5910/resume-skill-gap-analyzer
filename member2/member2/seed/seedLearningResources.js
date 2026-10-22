@@ -86,15 +86,18 @@ const allSkills = [
   const mongoUrl = process.env.MONGODB_URI || process.env.MONGO_URI;
   if (!mongoUrl) throw new Error("Set MONGODB_URI or MONGO_URI in the project .env file");
   await mongoose.connect(mongoUrl);
-  for (const skill of allSkills) {
+  const operations = allSkills.map((skill) => {
     const [title, url] = guides[skill];
     const youtubeUrl = `https://www.youtube.com/results?search_query=${encodeURIComponent(`${skill} beginner tutorial`)}`;
-    await LearningResource.updateOne(
-      { skill },
-      { $setOnInsert: { skill, title, url, difficulty: "Beginner" }, $set: { youtubeUrl } },
-      { upsert: true }
-    );
-  }
+    return {
+      updateOne: {
+        filter: { skill },
+        update: { $setOnInsert: { skill, title, url, difficulty: "Beginner" }, $set: { youtubeUrl } },
+        upsert: true
+      }
+    };
+  });
+  await LearningResource.bulkWrite(operations, { ordered: false });
   console.log(`Added free guides and YouTube topic links for ${allSkills.length} skills.`);
   await mongoose.disconnect();
 })().catch(async (error) => { console.error(error.message); await mongoose.disconnect(); process.exitCode = 1; });
